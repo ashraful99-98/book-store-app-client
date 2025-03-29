@@ -104,7 +104,6 @@ const BookTable = () => {
                         <th>Title</th>
                         <th>Author</th>
                         <th>Publisher</th>
-                        <th>Uploaded</th>
                     </tr>
                 </thead>
 
@@ -117,8 +116,6 @@ const BookTable = () => {
                                 <td>{book.title}</td>
                                 <td>{book.author}</td>
                                 <td>{book.publisher}</td>
-                                <td>{new Date(book.uploaded).toLocaleDateString()}</td>
-
                             </tr>
                             <tr>
                                 <td colSpan="6">
