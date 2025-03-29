@@ -1,0 +1,21 @@
+.random-seed-btn {
+    border: 3px solid transparent;
+    transition: border-color 0.5s ease-in-out, transform 0.3s;
+  }
+  
+  .random-seed-btn:hover {
+    border-color: white;
+    transform: scale(1.05);
+  }
+  
+
+
+.export-btn {
+    border: 3px solid transparent;
+    transition: border-color 0.5s ease-in-out, transform 0.3s;
+  }
+  
+  .export-btn:hover {
+    border-color: rgb(126, 126, 133);
+    transform: scale(1.05);
+  }
