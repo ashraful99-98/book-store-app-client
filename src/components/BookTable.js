@@ -18,7 +18,8 @@ const BookTable = () => {
     const fetchBooks = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`http://localhost:5000/api/books`, {
+            // const { data } = await axios.get(`http://localhost:5000/api/books`, {
+            const { data } = await axios.get(`https://book-store-app-server-yp86.onrender.com/api/books`, {
                 params: { seed, page, region, reviews },
             });
             setBooks((prev) => [...prev, ...data]);
