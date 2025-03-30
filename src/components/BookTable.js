@@ -10,7 +10,8 @@ const BookTable = () => {
     const [books, setBooks] = useState([]);
     const [seed, setSeed] = useState(12345);
     const [region, setRegion] = useState("en");
-    const [reviews, setReviews] = useState(1);
+    const [avgLikes, setAvgLikes] = useState(5);
+    const [avgReviews, setAvgReviews] = useState(1.0);
     const [page, setPage] = useState(1);
     const [expandedRow, setExpandedRow] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -18,9 +19,9 @@ const BookTable = () => {
     const fetchBooks = async () => {
         setLoading(true);
         try {
-            // const { data } = await axios.get(`http://localhost:5000/api/books`, {
             const { data } = await axios.get(`https://book-store-app-server-yp86.onrender.com/api/books`, {
-                params: { seed, page, region, reviews },
+                // const { data } = await axios.get(`http://localhost:5000/api/books`, {
+                params: { seed, page, region, avgLikes, avgReviews },
             });
             setBooks((prev) => [...prev, ...data]);
         } catch (error) {
@@ -33,7 +34,7 @@ const BookTable = () => {
         setBooks([]);
         setPage(1);
         fetchBooks();
-    }, [seed, region, reviews]);
+    }, [seed, region, avgLikes, avgReviews]);
 
     useEffect(() => {
         fetchBooks();
@@ -45,15 +46,18 @@ const BookTable = () => {
 
     return (
         <div className="container mt-4">
-            <Form className="mb-3 d-flex gap-3">
+            <Form className="mb-3 d-flex gap-3 flex-wrap">
+                {/* Language Selection */}
                 <Form.Group>
                     <Form.Label>Language</Form.Label>
                     <Form.Select value={region} onChange={(e) => setRegion(e.target.value)}>
                         <option value="en">English</option>
                         <option value="fr">French</option>
+                        <option value="de">German</option>
                     </Form.Select>
                 </Form.Group>
 
+                {/* Seed Selection */}
                 <Card className="p-2 border border-primary shadow-md">
                     <Form.Group>
                         <Form.Label className="fw-bold">Seed</Form.Label>
@@ -75,18 +79,31 @@ const BookTable = () => {
                     </Form.Group>
                 </Card>
 
-
+                {/* Likes Selection */}
                 <Form.Group>
-                    <Form.Label>Reviews</Form.Label>
+                    <Form.Label>Average Likes</Form.Label>
+                    <Form.Range
+                        min="0"
+                        max="10"
+                        step="0.1"
+                        value={avgLikes}
+                        onChange={(e) => setAvgLikes(parseFloat(e.target.value))}
+                    />
+                    <p className="text-center">{avgLikes.toFixed(0)} Likes</p>
+                </Form.Group>
+
+                {/* Reviews Selection */}
+                <Form.Group>
+                    <Form.Label>Average Reviews</Form.Label>
                     <Form.Control
                         type="number"
-                        value={reviews}
-                        step="1"
-                        onChange={(e) => setReviews(e.target.value)}
+                        step="0.1"
+                        value={avgReviews}
+                        onChange={(e) => setAvgReviews(parseFloat(e.target.value))}
                     />
                 </Form.Group>
 
-
+                {/* Export CSV */}
                 <CSVLink
                     data={books}
                     filename="books.csv"
@@ -118,37 +135,25 @@ const BookTable = () => {
                                 <td>{book.publisher}</td>
                             </tr>
                             <tr>
-                                <td colSpan="6">
+                                <td colSpan="5">
                                     <Collapse in={expandedRow === index}>
                                         <div className="p-3">
                                             <Card className="bg-light rounded shadow p-3">
                                                 <Row className="align-items-center">
                                                     <Col xs={3} md={2}>
-                                                        <img
-                                                            src={book.cover}
-                                                            alt="cover"
-                                                            className="img-fluid rounded mb-2"
-                                                            style={{ maxWidth: "150px" }}
-                                                        />
+                                                        <img src={book.cover} alt="cover" className="img-fluid rounded mb-2" />
                                                         <div className="p-1 rounded bg-primary text-light d-inline-flex align-items-center">
-                                                            <h5 className="mb-0 fs-6">{book.likes}</h5>
+                                                            <h5 className="mb-0 fs-6">{book.likes.toFixed(0)}</h5>
                                                             <AiFillLike size={15} className="ms-1" />
                                                         </div>
-
                                                     </Col>
                                                     <Col>
                                                         <h4 className="fw-bold">{book.title}</h4>
                                                         <p className="text-muted">by {book.author}</p>
                                                         <h5 className="mt-3">Reviews</h5>
-                                                        {book.reviews.length > 0 ? (
-                                                            book.reviews.map((rev, i) => (
-                                                                <p key={i} className="text-secondary">
-                                                                    "{rev.text}" - <i>{rev.author}</i> ({rev.company})
-                                                                </p>
-                                                            ))
-                                                        ) : (
-                                                            <p className="text-muted">No reviews</p>
-                                                        )}
+                                                        {book.reviews.length > 0 ? book.reviews.map((rev, i) => (
+                                                            <p key={i} className="text-secondary">"{rev.text}" - <i>{rev.author}</i> ({rev.company})</p>
+                                                        )) : <p className="text-muted">No reviews</p>}
                                                     </Col>
                                                 </Row>
                                             </Card>
@@ -160,11 +165,9 @@ const BookTable = () => {
                     ))}
                 </tbody>
             </Table>
-
             {loading ? <p>Loading...</p> : <Button onClick={() => setPage(page + 1)}>Load More</Button>}
         </div>
     );
 };
 
 export default BookTable;
-
